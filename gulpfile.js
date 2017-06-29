@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var wrap = require("gulp-wrap-function");
 var rename = require('gulp-rename');
-var ghPages = require('gulp-gh-pages');
 
 // not gulp plugins
 var path = require('path');
@@ -32,13 +31,9 @@ gulp.task('md2html', function(){
 			file.basename = 'index';
 			file.extname = '.html';
 	    }))
-	    .pipe(gulp.dest('dist/posts'));
+	    .pipe(gulp.dest('docs/posts'));
 });
 
-gulp.task('deploy', function() {
-    return gulp.src('dist/**/*')
-        .pipe(ghPages());
-});
 
 gulp.task('watch', function(){
 	gulp.watch(['templates/*.*','articles/*.md'], ['build']);
@@ -46,6 +41,6 @@ gulp.task('watch', function(){
 
 gulp.task('build', ['md2html'])
 
-gulp.task('default', ['build', 'deploy']);
+gulp.task('default', ['build']);
 
 
