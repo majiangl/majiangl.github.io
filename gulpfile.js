@@ -31,7 +31,7 @@ gulp.task('md2html', function(){
 			file.basename = 'index';
 			file.extname = '.html';
 	    }))
-	    .pipe(gulp.dest('docs/posts'));
+	    .pipe(gulp.dest('dist/posts'));
 });
 
 
