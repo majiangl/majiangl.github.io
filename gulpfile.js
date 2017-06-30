@@ -39,7 +39,7 @@ gulp.task('md2html', function(){
 gulp.task('deploy', function() {
     return gulp.src('dist/**/*')
         .pipe(ghPages({
-        	branch: 'main'
+        	branch: 'master'
         }));
 });
 
