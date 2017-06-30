@@ -6,6 +6,7 @@ const ghPages = require('gulp-gh-pages');
 // not gulp plugins
 const path = require('path');
 const marked = require('marked');
+var runSequence = require('run-sequence');
 
 const dot = require('dot');
 dot.templateSettings.strip = false;
@@ -49,6 +50,8 @@ gulp.task('watch', function(){
 
 gulp.task('build', ['md2html'])
 
-gulp.task('default', ['build', 'deploy']);
+gulp.task('default', function(callback){
+	runSequence('build', 'deploy', callback);
+});
 
 
