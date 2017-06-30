@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
+	<link rel="shortcut icon" href="/assets/images/favicon-32x32.png" type="image/png" sizes="32x32">
 </head>
 <body>
 	{{#def.header}}
