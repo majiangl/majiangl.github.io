@@ -1,23 +1,24 @@
-var gulp = require('gulp');
-var wrap = require("gulp-wrap-function");
-var rename = require('gulp-rename');
+const gulp = require('gulp');
+const wrap = require("gulp-wrap-function");
+const rename = require('gulp-rename');
+const ghPages = require('gulp-gh-pages');
 
 // not gulp plugins
-var path = require('path');
-var marked = require('marked');
+const path = require('path');
+const marked = require('marked');
 
-var dot = require('dot');
+const dot = require('dot');
 dot.templateSettings.strip = false;
 
 
 gulp.task('md2html', function(){
-	var dots = dot.process({path: "./templates"});
+	let dots = dot.process({path: "./templates"});
 	
-	var convertMarkdown = function(md){
+	let convertMarkdown = function(md){
 		return marked(md).trim();
 	};
 
-	var compilePage = function(html){
+	let compilePage = function(html){
 		return dots.page({
 			body: html
 		});
@@ -34,6 +35,13 @@ gulp.task('md2html', function(){
 	    .pipe(gulp.dest('dist/posts'));
 });
 
+gulp.task('deploy', function() {
+    return gulp.src('dist/**/*')
+        .pipe(ghPages({
+        	branch: 'main'
+        }));
+});
+
 
 gulp.task('watch', function(){
 	gulp.watch(['templates/*.*','articles/*.md'], ['build']);
@@ -41,6 +49,6 @@ gulp.task('watch', function(){
 
 gulp.task('build', ['md2html'])
 
-gulp.task('default', ['build']);
+gulp.task('default', ['build', 'deploy']);
 
 
