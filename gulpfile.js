@@ -2,11 +2,17 @@ const gulp = require('gulp');
 const wrap = require("gulp-wrap-function");
 const rename = require('gulp-rename');
 const ghPages = require('gulp-gh-pages');
+const useref = require('gulp-useref');
+const revAll = require('gulp-rev-all');
+const runSequence = require('run-sequence');
+const gulpif = require('gulp-if');
+const uglify = require('gulp-uglify');
+const minifyCss = require('gulp-clean-css');
 
 // not gulp plugins
 const path = require('path');
+const del = require('del');
 const marked = require('marked');
-var runSequence = require('run-sequence');
 
 const dot = require('dot');
 dot.templateSettings.strip = false;
@@ -33,30 +39,41 @@ gulp.task('md2html', function(){
 			file.basename = 'index';
 			file.extname = '.html';
 	    }))
-	    .pipe(gulp.dest('dist/posts'));
+	    .pipe(gulp.dest('dev/posts'));
 });
 
-gulp.task('images', function() {
-	return gulp.src('assets/images/**/*')
-		.pipe(gulp.dest('dist/assets/images'));
+gulp.task('copyAssets2Dev', function(){
+	return gulp.src('assets/**')
+		.pipe(gulp.dest('dev/assets'));
 });
 
-gulp.task('deploy', function() {
-    return gulp.src('dist/**/*')
+gulp.task('dev', function(callback){
+	runSequence('clear', ['md2html','copyAssets2Dev'], callback);
+});
+
+gulp.task('clear', function(){
+	return del(['dev','dist']);
+});
+
+gulp.task('release', ['dev'], function(){
+	return gulp.src('dev/**')
+        .pipe(gulpif('*.html', useref()))
+        .pipe(gulpif('*.js', uglify()))
+        .pipe(gulpif('*.css', minifyCss()))
+        .pipe(revAll.revision({     
+        	dontGlobal: ['/favicon.*'],
+            dontRenameFile: ['.html']
+        }))
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('deploy', ['release'], function() {
+    return gulp.src('dist/**')
         .pipe(ghPages({
         	branch: 'master'
         }));
 });
 
-
-gulp.task('watch', function(){
-	gulp.watch(['templates/*','articles/*.md'], ['build']);
-});
-
-gulp.task('build', ['md2html','images']);
-
-gulp.task('default', function(callback){
-	runSequence('build', 'deploy', callback);
-});
+gulp.task('default', ['deploy']);
 
 
